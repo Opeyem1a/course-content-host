@@ -1,0 +1,60 @@
+@import url("https://rsms.me/inter/inter.css");
+
+body {
+  position: relative;
+  margin: auto;
+  padding: 0;
+  width: 60%;
+  font-family: "Inter", sans-serif;
+  text-align: center;
+  color: #ffa3a3;
+}
+
+.main-content {
+  text-align: left;
+}
+
+.qna-answer {
+  color: #c4c4c4;
+}
+
+.question-wrapper {
+  background-color: #fafafa;
+  border-radius: 5px;
+  padding: 5%;
+}
+
+.question-title {
+  text-decoration: italic;
+  font-size: 2rem;
+}
+
+h1 {
+  display: block;
+  font-size: 3em;
+  margin: 0 0 24px 0;
+}
+
+h2 {
+  font-weight: 500;
+  font-size: 24px;
+}
+
+h3 {
+  font-weight: 300;
+  font-size: 24px;
+}
+
+a {
+  color: inherit;
+  text-decoration: underline;
+}
+
+.header {
+  margin-top: 100px;
+  margin-bottom: 100px;
+}
+
+.footer {
+  margin-top: 200px;
+}
