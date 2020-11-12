@@ -1,16 +1,18 @@
 const csvBaseName = "module";
+//TODO: replace with window.location.pathname for deployment
+const pagePath = "website/again/2-1DesignGuidelines";
 
 $(function () {
   populateQuiz();
 });
 
 const populateQuiz = () => {
-  fetch(`./assets/${csvBaseName}${getModuleNumber()}.csv`)
+  fetch(`./assets/${csvBaseName}${getModuleNumber(pagePath)}.csv`)
     .then((response) => response.text())
     .then((text) => {
       let csvData = $.csv.toObjects(text);
       csvData = csvData
-        .filter((qObj) => qObj.section == getSectionNumber())
+        .filter((qObj) => qObj.section == getSectionNumber(pagePath))
         .map((qObj) => {
           return {
             question: qObj.question,
@@ -60,15 +62,21 @@ const populateQuiz = () => {
     });
 };
 
-const getSectionNumber = () => {
-  return 1;
+const getSectionNumber = (path) => {
+  return getModuleSection(path)[1];
 };
 
-const getModuleNumber = () => {
-  return 2;
+const getModuleNumber = (path) => {
+  return getModuleSection(path)[0];
 };
 
 const getModuleSection = (path) => {
-    //window.location.pathname
-
-}
+  //window.location.pathname
+  let temp = path.split("/").pop().split("-");
+  let moduleNo = parseInt(temp[0]);
+  //if first 2 chars are numeric, return ##, else return just the first one, which will be numeric by convention
+  let sectionNo = /^[0-9]+$/.test(temp[1].slice(0, 2))
+    ? parseInt(temp[1].slice(0, 2))
+    : parseInt(temp[1].slice(0, 1));
+  return [moduleNo, sectionNo];
+};
