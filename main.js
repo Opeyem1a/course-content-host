@@ -21,7 +21,42 @@ const populateQuiz = () => {
             ].sort(() => Math.random() - 0.5),
           };
         });
-      console.log(csvData);
+      return csvData;
+    })
+    .then((questions) => {
+      console.log(questions);
+      questions.forEach((question, qIndex) => {
+        let currentQuestion = $("<div></div>")
+          .attr({ class: "form-group question-wrapper" })
+          .append(
+            $("<p></p>").text(`${question.question}`).attr({
+              class: "question-title",
+            })
+          );
+
+        question.options.forEach((option, oIndex) => {
+          let opt = $("<div></div>")
+            .attr({ class: "form-check" })
+            .append(
+              $("<input></input>").attr({
+                class: "form-check-input",
+                type: "radio",
+                name: `q${qIndex}`,
+                id: `q${qIndex}o${oIndex}`,
+              })
+            )
+            .append(
+              $("<label></label>")
+                .text(`${option[Object.keys(option)[0]]}`)
+                .attr({
+                  class: "form-check-label",
+                  for: `q${qIndex}o${oIndex}`,
+                })
+            );
+          currentQuestion.append(opt);
+        });
+        $("#review-form").append(currentQuestion);
+      });
     });
 };
 
@@ -32,3 +67,8 @@ const getSectionNumber = () => {
 const getModuleNumber = () => {
   return 2;
 };
+
+const getModuleSection = (path) => {
+    //window.location.pathname
+
+}
