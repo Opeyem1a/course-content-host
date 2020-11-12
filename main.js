@@ -37,6 +37,7 @@ const populateQuiz = () => {
           );
 
         question.options.forEach((option, oIndex) => {
+          let attr = Object.keys(option)[0];
           let opt = $("<div></div>")
             .attr({ class: "form-check" })
             .append(
@@ -44,12 +45,18 @@ const populateQuiz = () => {
                 class: "form-check-input",
                 type: "radio",
                 name: `q${qIndex}`,
-                id: `q${qIndex}o${oIndex}`,
+                id: `${getOptionType(option)}-q${qIndex}o${oIndex}`,
               })
             )
             .append(
               $("<label></label>")
-                .text(`${option[Object.keys(option)[0]]}`)
+                .text(
+                  `${
+                    option[attr].slice(0, 1) == "~"
+                      ? option[attr].slice(1)
+                      : option[attr]
+                  }`
+                )
                 .attr({
                   class: "form-check-label",
                   for: `q${qIndex}o${oIndex}`,
@@ -79,4 +86,10 @@ const getModuleSection = (path) => {
     ? parseInt(temp[1].slice(0, 2))
     : parseInt(temp[1].slice(0, 1));
   return [moduleNo, sectionNo];
+};
+
+const getOptionType = (option) => {
+  let attr = Object.keys(option)[0];
+  if (attr == "answer") return "ans";
+  else return option[attr].slice(0, 1) == "~" ? "alm" : "d";
 };
