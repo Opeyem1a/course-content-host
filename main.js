@@ -3,8 +3,22 @@ const csvBaseName = "module";
 const pagePath = "website/again/2-1DesignGuidelines";
 
 $(function () {
+  loadLinksAndScripts();
   populateQuiz();
 });
+
+const loadLinksAndScripts = () => {
+  let scripts = `<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"
+  integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx"
+  crossorigin="anonymous"></script>`;
+  let bootstrapCss = `<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css"
+  integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">`;
+  //TODO: update relative link to custom css
+  let customCss = `<link href="styles.css" rel="stylesheet">`;
+
+  $("head").append(bootstrapCss, customCss);
+  $("body").append(scripts);
+};
 
 const populateQuiz = () => {
   fetch(`./assets/${csvBaseName}${getModuleNumber(pagePath)}.csv`)
@@ -26,6 +40,7 @@ const populateQuiz = () => {
       return csvData;
     })
     .then((questions) => {
+      //TODO: Remove 👇
       console.log(questions);
       questions.forEach((question, qIndex) => {
         let currentQuestion = $("<div></div>")
@@ -59,16 +74,57 @@ const populateQuiz = () => {
                 )
                 .attr({
                   class: "form-check-label",
-                  for: `q${qIndex}o${oIndex}`,
+                  for: `${getOptionType(option)}-q${qIndex}o${oIndex}`,
                 })
             );
           currentQuestion.append(opt);
         });
         $("#review-form").append(currentQuestion);
       });
+    })
+    .then(() => {
+      $("#review-form").append(
+        $("<button></button>")
+          .text("Submit")
+          .attr({
+            class: "btn btn-primary",
+            type: "submit",
+          })
+          .on("click", (event) => {
+            displayGrade(calculateGrade(event));
+          })
+      );
     });
 };
 
+const displayGrade = (grade) => {
+  if ($("#form-grade").length == 0) {
+    $("#review-form").append(
+      //TODO: update class styling
+      $("<p></p>").attr({
+        id: "form-grade",
+        class: "",
+      })
+    );
+  }
+  $("#form-grade").text(`Score: ${grade[0]}/${grade[1]}`);
+};
+
+const calculateGrade = (event) => {
+  event.preventDefault();
+  let score = 0,
+    total = 0;
+  //function() is needed for the each() callback
+  $("input:radio[id^='ans-']").each(function () {
+    if ($(this).is(":checked")) score++;
+    total++;
+  });
+
+  console.log([score, total]);
+  return [score, total];
+};
+
+//helper functions
 const getSectionNumber = (path) => {
   return getModuleSection(path)[1];
 };
