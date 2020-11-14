@@ -17,15 +17,22 @@ const addFeedbackGifs = () => {
     let offset = i % feedbackGifsSize[gifType];
     i++;
     //attach gif after the question block element
-    attachGif($(this).parent().parent(), feedbackGifs[gifType][offset]);
+    attachOrEditGif($(this).parent().parent(), feedbackGifs[gifType][offset]);
   });
 };
 
-const attachGif = (jqElement, gifLink) => {
+const attachOrEditGif = (jqElement, gifLink) => {
   let embed = `<iframe src="https://giphy.com/embed/${codeFromGifLink(gifLink)}" width="440" height="480" frameBorder="0"
               class="giphy-embed" allowFullScreen></iframe>
               <p><a href="${gifLink}">via GIPHY</a></p>`;
-  jqElement.after(embed);
+  //TODO: edit gif if it's already attached
+  if($(".giphy-embed").length == 0) jqElement.after(embed);
+  else {
+    $(".giphy-embed").attr({
+      src: `https://giphy.com/embed/${codeFromGifLink(gifLink)}`,
+      href: `${gifLink}`,
+    })
+  }
 };
 
 const codeFromGifLink = (link) => {
