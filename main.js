@@ -16,7 +16,7 @@ const addFeedbackGifs = () => {
     let gifType = $(this).attr("id").startsWith("ans") ? "correct" : $(this).attr("id").startsWith("alm") ? "almost" : "wrong";
     let offset = i % feedbackGifsSize[gifType];
     i++;
-    attachGif($(this).parent(), feedbackGifs[gifType]);
+    attachGif($(this).parent(), feedbackGifs[gifType][offset]);
   });
 };
 
