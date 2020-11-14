@@ -27,9 +27,8 @@ const addFeedbackGifs = () => {
 
 const attachOrEditGif = (jqElement, gifLink) => {
   let gifClass = jqElement.attr("name");
-  let embed = `<iframe src="https://giphy.com/embed/${codeFromGifLink(
-    gifLink
-  )}" width="440" height="480" frameBorder="0" id="giphy-embed-${gifClass}"
+  let embed = `<iframe src="https://giphy.com/embed/${codeFromGifLink(gifLink)}"
+              width="440" height="480" frameBorder="0" id="giphy-embed-${gifClass}"
               class="giphy-embed" allowFullScreen></iframe>
               <p><a href="${gifLink}">via GIPHY</a></p>`;
 
