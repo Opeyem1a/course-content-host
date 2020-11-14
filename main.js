@@ -1,13 +1,49 @@
 const csvBaseName = "module";
 //TODO: replace with window.location.pathname for deployment
 const pagePath = "website/again/2-1DesignGuidelines";
+let feedbackGifs = {};
+let feedbackGifsSize = {};
 
 $(function () {
+  loadFeedbackGifs();
   loadLinksAndScripts();
   populateQuiz();
 });
 
+const addFeedbackGifs = () => {
+  let i = 0;
+  $("input:checked").each(function () {
+    let gifType = $(this).attr("id").startsWith("ans") ? "correct" : $(this).attr("id").startsWith("alm") ? "almost" : "wrong";
+    let offset = i % feedbackGifsSize[gifType];
+    i++;
+    attachGif($(this).parent(), feedbackGifs[gifType]);
+  });
+};
+
+const attachGif = (jqElement, gifLink) => {
+  let embed = `<iframe src="https://giphy.com/embed/${codeFromGifLink(gifLink)}" width="440" height="480" frameBorder="0"
+              class="giphy-embed" allowFullScreen></iframe>
+              <p><a href="${gifLink}">via GIPHY</a></p>`;
+  jqElement.after(embed);
+};
+
+const codeFromGifLink = (link) => {
+  return link.split("-").pop();
+};
+
+const loadFeedbackGifs = () => {
+  fetch(`./assets/feedback/feedbackGifs.json`)
+    .then((response) => response.json())
+    .then((json) => {
+      feedbackGifs = json;
+      Object.keys(json).forEach((key) => {
+        feedbackGifsSize[key] = feedbackGifs[key].length;
+      })
+    });
+};
+
 const loadLinksAndScripts = () => {
+  //TODO: ask boss to implement this so it doesn't need to be added dynamically
   let scripts = `<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"
   integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx"
   crossorigin="anonymous"></script>`;
@@ -52,7 +88,7 @@ const populateQuiz = () => {
           );
 
         question.options.forEach((option, oIndex) => {
-          let attr = Object.keys(option)[0];
+          let key = Object.keys(option)[0];
           let opt = $("<div></div>")
             .attr({ class: "form-check" })
             .append(
@@ -67,9 +103,9 @@ const populateQuiz = () => {
               $("<label></label>")
                 .text(
                   `${
-                    option[attr].slice(0, 1) == "~"
-                      ? option[attr].slice(1)
-                      : option[attr]
+                    option[key].slice(0, 1) == "~"
+                      ? option[key].slice(1)
+                      : option[key]
                   }`
                 )
                 .attr({
@@ -92,6 +128,7 @@ const populateQuiz = () => {
           })
           .on("click", (event) => {
             displayGrade(calculateGrade(event));
+            addFeedbackGifs();
           })
       );
     });
@@ -145,7 +182,7 @@ const getModuleSection = (path) => {
 };
 
 const getOptionType = (option) => {
-  let attr = Object.keys(option)[0];
-  if (attr == "answer") return "ans";
-  else return option[attr].slice(0, 1) == "~" ? "alm" : "d";
+  let key = Object.keys(option)[0];
+  if (key == "answer") return "ans";
+  else return option[key].slice(0, 1) == "~" ? "alm" : "d";
 };
