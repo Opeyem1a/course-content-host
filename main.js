@@ -92,8 +92,6 @@ const populateQuiz = () => {
       return csvData;
     })
     .then((questions) => {
-      //TODO: Remove 👇
-      console.log(questions);
       questions.forEach((question, qIndex) => {
         let currentQuestion = $("<div></div>")
           .attr({
