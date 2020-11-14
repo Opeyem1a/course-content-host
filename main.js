@@ -29,15 +29,15 @@ const attachOrEditGif = (jqElement, gifLink) => {
   let gifClass = jqElement.attr("name");
   let embed = `<iframe src="https://giphy.com/embed/${codeFromGifLink(
     gifLink
-  )}" width="440" height="480" frameBorder="0"
-              class="giphy-embed giphy-embed-${gifClass}" allowFullScreen></iframe>
+  )}" width="440" height="480" frameBorder="0" id="giphy-embed-${gifClass}"
+              class="giphy-embed" allowFullScreen></iframe>
               <p><a href="${gifLink}">via GIPHY</a></p>`;
 
   //TODO: edit gif if it's already attached
-  if ($(`.giphy-embed-${gifClass}`).length == 0)
+  if ($(`#giphy-embed-${gifClass}`).length == 0)
     jqElement.parent().parent().after(embed);
   else {
-    $(`.giphy-embed-${gifClass}`).attr({
+    $(`#giphy-embed-${gifClass}`).attr({
       src: `https://giphy.com/embed/${codeFromGifLink(gifLink)}`,
       href: `${gifLink}`,
     });
