@@ -3,13 +3,37 @@ const csvBaseName = "module";
 const pagePath = "website/again/2-1DesignGuidelines";
 let feedbackGifs = {};
 let feedbackGifsSize = {};
+let sessionTimes = {
+  eachContinue: [],
+  eachSubmit: [],
+  eachScore: [], //array or objects, each object
+  startTime: 0, //time from load to end
+  endTime: 0,
+}
 
 $(function () {
   loadLinksAndScripts();
+  startTiming();
   loadFeedbackGifs();
   populateQuiz();
   setupContinue();
 });
+
+const startTiming = () => {
+  sessionTimes.startTime = Date.now();
+  //TODO: start listening for continues, submits, and track scores per question
+  //TODO: you can't add events before the elements exist in the DOM
+  $("#goto-next-section").on("click", function(event){
+    event.preventDefault();
+    console.log("Hi");
+    sessionTimes.eachContinue.push(Date.now());
+  })
+
+  $("#submit-review-form").on("click", function(event){
+    event.preventDefault();
+    sessionTimes.eachSubmit.push(Date.now());
+  })
+};
 
 const setupContinue = () => {
   $(".content-section").each(function(index) {
@@ -170,6 +194,7 @@ const populateQuiz = () => {
         $("<button></button>")
           .text("Submit")
           .attr({
+            id: "submit-review-form",
             class: "btn btn-primary",
             type: "submit",
           })
