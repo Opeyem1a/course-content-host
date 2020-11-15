@@ -5,10 +5,39 @@ let feedbackGifs = {};
 let feedbackGifsSize = {};
 
 $(function () {
-  loadFeedbackGifs();
   loadLinksAndScripts();
+  loadFeedbackGifs();
   populateQuiz();
+  setupContinue();
 });
+
+const setupContinue = () => {
+  $(".content-section").each(function(index) {
+    //skip hiding first section
+    if(index == 0) return true;
+    $(this).hide();
+  });
+
+  addContinue();
+};
+
+const addContinue = () => {
+  // TODO: where this gets added kind of matters, double check html structure with
+  $(".content-section:last").after(
+    $("<a></a>").text("Continue").attr({
+      id: "goto-next-section",
+    }).on("click", function(event) {
+      event.preventDefault();
+      
+      if($(".content-section:hidden:first").length == 0) {
+        $("#review-form").show();
+        $("#goto-next-section").hide();
+      } else {
+        $(".content-section:hidden:first").show();
+      }
+    })
+  )
+};
 
 const addFeedbackGifs = () => {
   let i = 0;
@@ -102,7 +131,7 @@ const populateQuiz = () => {
             $("<p></p>").text(`${question.question}`).attr({
               class: "question-title",
             })
-          );
+          )
 
         question.options.forEach((option, oIndex) => {
           let key = Object.keys(option)[0];
@@ -132,7 +161,8 @@ const populateQuiz = () => {
             );
           currentQuestion.append(opt);
         });
-        $("#review-form").append(currentQuestion);
+        //hide the entire form and it functions like a defacto section
+        $("#review-form").hide().append(currentQuestion);
       });
     })
     .then(() => {
