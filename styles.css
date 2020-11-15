@@ -29,6 +29,10 @@ body {
   font-size: 2rem;
 }
 
+#goto-next-section {
+  cursor: pointer;
+}
+
 h1 {
   display: block;
   font-size: 3em;
