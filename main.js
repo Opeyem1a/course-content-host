@@ -9,36 +9,59 @@ let sessionTimes = {
   eachScore: [], //array or objects, each object
   startTime: 0, //time from load to end
   endTime: 0,
-}
+};
 
 $(function () {
+  sessionTimes.startTime = Date.now();
   loadLinksAndScripts();
-  startTiming();
   loadFeedbackGifs();
   populateQuiz();
   setupContinue();
+  // startTiming();
 });
 
 const startTiming = () => {
-  sessionTimes.startTime = Date.now();
   //TODO: start listening for continues, submits, and track scores per question
   //TODO: you can't add events before the elements exist in the DOM
-  $("#goto-next-section").on("click", function(event){
+  $("#goto-next-section").on("click", function (event) {
     event.preventDefault();
     console.log("Hi");
     sessionTimes.eachContinue.push(Date.now());
-  })
+  });
 
-  $("#submit-review-form").on("click", function(event){
+  $("#submit-review-form").on("click", function (event) {
     event.preventDefault();
+    let results = {};
+    $("input[type=radio]:checked").each(function () {
+      results[$(this).parent().parent().attr("id")] = $(this)
+        .attr("id")
+        .split("-")[0];
+    });
+    sessionTimes.eachScore.push(results);
     sessionTimes.eachSubmit.push(Date.now());
+  });
+};
+
+const downloadTiming = (event) => {
+  // event.preventDefault();
+  sessionTimes.endTime = Date.now();
+  let timings = JSON.stringify(sessionTimes);
+  console.log(timings);
+  let data = new Blob([timings], { type: "text/plain" });
+
+  let url = window.URL.createObjectURL(data);
+
+  $("#download-timing-btn").attr({
+    href: url,
+    download: `COSC341-${getModuleNumber(pagePath)}-${getSectionNumber(pagePath)}-Timings.txt`,
   })
+  // TODO: window.URL.revokeObjectURL(url);
 };
 
 const setupContinue = () => {
-  $(".content-section").each(function(index) {
+  $(".content-section").each(function (index) {
     //skip hiding first section
-    if(index == 0) return true;
+    if (index == 0) return true;
     $(this).hide();
   });
 
@@ -47,20 +70,35 @@ const setupContinue = () => {
 
 const addContinue = () => {
   // TODO: where this gets added kind of matters, double check html structure with
-  $(".content-section:last").after(
-    $("<a></a>").text("Continue").attr({
-      id: "goto-next-section",
-    }).on("click", function(event) {
-      event.preventDefault();
-      
-      if($(".content-section:hidden:first").length == 0) {
-        $("#review-form").show();
-        $("#goto-next-section").hide();
-      } else {
-        $(".content-section:hidden:first").show();
-      }
-    })
-  )
+  $("#review-form:last").after(
+    $("<a></a>")
+      .text("Continue")
+      .attr({
+        id: "goto-next-section",
+      })
+      .on("click", function (event) {
+        event.preventDefault();
+        if ($(".content-section:hidden:first").length == 0) {
+          if ($("#review-form:hidden").length != 0) $("#review-form").show();
+          else {
+            $("#goto-next-section").after(
+              //TODO: what should the download button say?
+              $("<a></a>")
+                .text("Download Here")
+                .attr({
+                  id: "download-timing-btn",
+                })
+                .on("click", function (event) {
+                  downloadTiming(event);
+                })
+            );
+            $("#goto-next-section").hide();
+          }
+        } else {
+          $(".content-section:hidden:first").show();
+        }
+      })
+  );
 };
 
 const addFeedbackGifs = () => {
@@ -155,7 +193,7 @@ const populateQuiz = () => {
             $("<p></p>").text(`${question.question}`).attr({
               class: "question-title",
             })
-          )
+          );
 
         question.options.forEach((option, oIndex) => {
           let key = Object.keys(option)[0];
@@ -203,6 +241,8 @@ const populateQuiz = () => {
             addFeedbackGifs();
           })
       );
+      //TODO: remove 👇
+      startTiming();
     });
 };
 

@@ -31,6 +31,12 @@ body {
 
 #goto-next-section {
   cursor: pointer;
+  text-decoration: underline;
+}
+
+#download-timing-btn {
+  cursor: pointer;
+  text-decoration: underline;
 }
 
 h1 {
