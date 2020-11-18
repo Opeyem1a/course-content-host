@@ -6,29 +6,35 @@ let feedbackGifsSize = {};
 let sessionTimes = {
   eachContinue: [],
   eachSubmit: [],
-  eachScore: [], //array or objects, each object
+  eachScore: [], //array of objects, each object contains q:a pairs for all answered qs
   startTime: 0, //time from load to end
   endTime: 0,
 };
 
 $(function () {
-  sessionTimes.startTime = Date.now();
-  loadLinksAndScripts();
-  loadFeedbackGifs();
-  populateQuiz();
-  setupContinue();
-  // startTiming();
+  setupPage().then((text) => {
+    console.log(text);
+    loadFeedbackGifs();
+    setupContinue().then(() => startTimingContinue());
+    populateQuiz().then(() => startTimingQuiz());
+  });
 });
 
-const startTiming = () => {
-  //TODO: start listening for continues, submits, and track scores per question
-  //TODO: you can't add events before the elements exist in the DOM
+const setupPage = () => {
+  return new Promise((resolve, reject) => {
+    sessionTimes.startTime = Date.now();
+    resolve("Initializing...");
+  });
+};
+
+const startTimingContinue = () => {
   $("#goto-next-section").on("click", function (event) {
     event.preventDefault();
-    console.log("Hi");
     sessionTimes.eachContinue.push(Date.now());
   });
+};
 
+const startTimingQuiz = () => {
   $("#submit-review-form").on("click", function (event) {
     event.preventDefault();
     let results = {};
@@ -43,29 +49,34 @@ const startTiming = () => {
 };
 
 const downloadTiming = (event) => {
-  // event.preventDefault();
-  sessionTimes.endTime = Date.now();
-  let timings = JSON.stringify(sessionTimes);
-  console.log(timings);
-  let data = new Blob([timings], { type: "text/plain" });
+  return new Promise((resolve, reject) => {
+    sessionTimes.endTime = Date.now();
+    let timings = JSON.stringify(sessionTimes);
+    console.log(timings);
+    let data = new Blob([timings], { type: "text/plain" });
 
-  let url = window.URL.createObjectURL(data);
+    let url = window.URL.createObjectURL(data);
 
-  $("#download-timing-btn").attr({
-    href: url,
-    download: `COSC341-${getModuleNumber(pagePath)}-${getSectionNumber(pagePath)}-Timings.txt`,
-  })
-  // TODO: window.URL.revokeObjectURL(url);
+    $("#download-timing-btn").attr({
+      href: url,
+      download: `COSC341-${getModuleNumber(pagePath)}-${getSectionNumber(
+        pagePath
+      )}-Timings.txt`,
+    });
+    resolve(url);
+  });
 };
 
 const setupContinue = () => {
-  $(".content-section").each(function (index) {
-    //skip hiding first section
-    if (index == 0) return true;
-    $(this).hide();
+  return new Promise((resolve, reject) => {
+    $(".content-section").each(function (index) {
+      //skip hiding first section
+      if (index == 0) return true;
+      $(this).hide();
+    });
+    addContinue();
+    resolve();
   });
-
-  addContinue();
 };
 
 const addContinue = () => {
@@ -89,7 +100,12 @@ const addContinue = () => {
                   id: "download-timing-btn",
                 })
                 .on("click", function (event) {
-                  downloadTiming(event);
+                  downloadTiming(event).then((url) => {
+                    setTimeout((url) => {
+                      //So the user has time to download file before the url is revoked
+                      window.URL.revokeObjectURL(url);
+                    }, 0);
+                  });
                 })
             );
             $("#goto-next-section").hide();
@@ -123,7 +139,6 @@ const attachOrEditGif = (jqElement, gifLink) => {
               class="giphy-embed" allowFullScreen></iframe>
               <p><a href="${gifLink}">via GIPHY</a></p>`;
 
-  //TODO: edit gif if it's already attached
   if ($(`#giphy-embed-${gifClass}`).length == 0)
     jqElement.parent().parent().after(embed);
   else {
@@ -151,20 +166,20 @@ const loadFeedbackGifs = () => {
 
 const loadLinksAndScripts = () => {
   //TODO: ask boss to implement this so it doesn't need to be added dynamically
-  let scripts = `<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"
-  integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx"
-  crossorigin="anonymous"></script>`;
-  let bootstrapCss = `<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css"
-  integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">`;
+  // let scripts = `<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"
+  // integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx"
+  // crossorigin="anonymous"></script>`;
+  // let bootstrapCss = `<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css"
+  // integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">`;
   //TODO: update relative link to custom css
-  let customCss = `<link href="styles.css" rel="stylesheet">`;
-
-  $("head").append(bootstrapCss, customCss);
-  $("body").append(scripts);
+  // let customCss = `<link href="styles.css" rel="stylesheet">`;
+  // $("head").append(bootstrapCss, customCss);
+  // $("body").append(scripts);
 };
 
 const populateQuiz = () => {
-  fetch(`./assets/${csvBaseName}${getModuleNumber(pagePath)}.csv`)
+  //return so the promise can be chained
+  return fetch(`./assets/${csvBaseName}${getModuleNumber(pagePath)}.csv`)
     .then((response) => response.text())
     .then((text) => {
       let csvData = $.csv.toObjects(text);
@@ -223,7 +238,7 @@ const populateQuiz = () => {
             );
           currentQuestion.append(opt);
         });
-        //hide the entire form and it functions like a defacto section
+        //hide the entire form and it functions like a section without needing to be wrapped in a <div>
         $("#review-form").hide().append(currentQuestion);
       });
     })
@@ -241,8 +256,6 @@ const populateQuiz = () => {
             addFeedbackGifs();
           })
       );
-      //TODO: remove 👇
-      startTiming();
     });
 };
 
@@ -273,7 +286,6 @@ const calculateGrade = (event) => {
   return [score, total];
 };
 
-//helper functions
 const getSectionNumber = (path) => {
   return getModuleSection(path)[1];
 };
@@ -283,7 +295,6 @@ const getModuleNumber = (path) => {
 };
 
 const getModuleSection = (path) => {
-  //window.location.pathname
   let temp = path.split("/").pop().split("-");
   let moduleNo = parseInt(temp[0]);
   //if first 2 chars are numeric, return ##, else return just the first one, which will be numeric by convention
