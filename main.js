@@ -128,16 +128,19 @@ const addFeedbackGifs = () => {
     let offset = i % feedbackGifsSize[gifType];
     i++;
     //attach gif after the question block element
-    attachOrEditGif($(this), feedbackGifs[gifType][offset]);
+    attachOrEditGif($(this), gifType, offset);
   });
 };
 
-const attachOrEditGif = (jqElement, gifLink) => {
+const attachOrEditGif = (jqElement, gifType, offset) => {
+  //TODO: <img src="./assets/feedbackGifs/giphy.gif"></img>
+  let gifLink = feedbackGifs[gifType][offset];
   let gifClass = jqElement.attr("name");
   let embed = `<iframe src="https://giphy.com/embed/${codeFromGifLink(gifLink)}"
               width="440" height="480" frameBorder="0" id="giphy-embed-${gifClass}"
               class="giphy-embed" allowFullScreen></iframe>
               <p><a href="${gifLink}">via GIPHY</a></p>`;
+  let embedGif = `<img src="./assets/feedbackGifs/giphy.gif"></img><p><a href="${gifLink}">via GIPHY</a></p>`
 
   if ($(`#giphy-embed-${gifClass}`).length == 0)
     jqElement.parent().parent().after(embed);
