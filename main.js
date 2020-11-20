@@ -1,6 +1,6 @@
 const csvBaseName = "module";
 //TODO: replace with window.location.pathname for deployment
-const pagePath = "website/again/2-1DesignGuidelines";
+const pagePath = "website/again/2-11DesignGuidelines";
 let feedbackGifs = {};
 let feedbackGifsSize = {};
 let sessionTimes = {
