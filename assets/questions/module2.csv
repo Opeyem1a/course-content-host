@@ -1,5 +1,5 @@
-section,question,answer,distractor1,distractor2,distractor3
-1,default1,correct1,~almost1,no1,nope1
-1,default2,correct2,nah2,~almost2,nope2
-2,default3,correct3,nah3,no3,~almost3
-3,default4,correct4,~almost4,no4,nope4
+section,question,answer,distractor1,distractor2
+1,default1,"question, with commas, a lot.",~almost1,no1
+1,default2,correct2,nah2,~almost2
+2,default3,correct3,no3,~almost3
+3,default4,correct4,~almost4,no4,
