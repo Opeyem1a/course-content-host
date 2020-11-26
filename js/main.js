@@ -1,5 +1,6 @@
 const csvBaseName = "module";
 const pagePath = window.location.pathname;
+
 let feedbackGifs = {};
 let feedbackGifsSize = {};
 let sessionTimes = {
@@ -9,6 +10,7 @@ let sessionTimes = {
   startTime: 0, //time from load to end
   endTime: 0,
 };
+let hasQuestions = true;
 
 $(function () {
   setupPage().then((text) => {
@@ -29,7 +31,11 @@ const setupPage = () => {
 const startTimingContinue = () => {
   $("#goto-next-section").on("click", function (event) {
     event.preventDefault();
-    sessionTimes.eachContinue.push(Date.now());
+    let data = {
+      section: $(".content-section:visible").eq(-2).find("h3").text(),
+      time: Date.now(),
+    };
+    sessionTimes.eachContinue.push(data);
   });
 };
 
@@ -68,9 +74,12 @@ const downloadTiming = (event) => {
 
 const setupContinue = () => {
   return new Promise((resolve, reject) => {
-    $(".content-section").each(function (index) {
+    $(".content-section").each(function(index) {
       //skip hiding first section
       if (index == 0) return true;
+      $(this).hide();
+    });
+    $("#review-form").each(function() {
       $(this).hide();
     });
     addContinue();
@@ -89,7 +98,8 @@ const addContinue = () => {
       .on("click", function (event) {
         event.preventDefault();
         if ($(".content-section:hidden:first").length == 0) {
-          if ($("#review-form:hidden").length != 0) $("#review-form").show();
+          if ($("#review-form:hidden").length != 0 && hasQuestions)
+            $("#review-form").show();
           else {
             $("#goto-next-section").after(
               //TODO: what should the download button say?
@@ -126,33 +136,36 @@ const addFeedbackGifs = () => {
       : "wrong";
     let offset = i % feedbackGifsSize[gifType];
     i++;
-    //attach gif after the question block element
-    attachOrEditGif($(this), gifType, offset);
+    //attach gif after the question-wrapper div element
+    attachOrEditGif($(this).parent().parent(), gifType, offset);
   });
 };
 
-const attachOrEditGif = (jqElement, gifType, offset) => {
-  //TODO: <img src="./assets/feedbackGifs/giphy.gif"></img>
-  let gifLink = feedbackGifs[gifType][offset];
-  let gifClass = jqElement.attr("name");
-  let embed = `<iframe src="https://giphy.com/embed/${codeFromGifLink(gifLink)}"
-              width="440" height="480" frameBorder="0" id="giphy-embed-${gifClass}"
-              class="giphy-embed" allowFullScreen></iframe>
-              <p><a href="${gifLink}">via GIPHY</a></p>`;
-  let embedGif = `<img src="./assets/feedbackGifs/giphy.gif"></img><p><a href="${gifLink}">via GIPHY</a></p>`
-
-  if ($(`#giphy-embed-${gifClass}`).length == 0)
-    jqElement.parent().parent().after(embed);
-  else {
-    $(`#giphy-embed-${gifClass}`).attr({
-      src: `https://giphy.com/embed/${codeFromGifLink(gifLink)}`,
-      href: `${gifLink}`,
-    });
-  }
+const getFilenameFromLink = (gifLink) => {
+  return gifLink.split("/").pop();
 };
 
-const codeFromGifLink = (link) => {
-  return link.split("-").pop();
+const attachOrEditGif = (jqElement, gifType, offset) => {
+  let gifLink = feedbackGifs[gifType][offset];
+  let gifClass = jqElement.attr("id");
+
+  let embedGif = `<img id="giphy-embed-${gifClass}"
+                        src="../assets/feedbackGifs/${gifType}/${getFilenameFromLink(gifLink)}.gif">
+                  </img>
+                  <p>
+                    <a id="giphy-embed-link-${gifClass}" href="${gifLink}">via GIPHY</a>
+                  </p>`;
+
+  if ($(`#giphy-embed-${gifClass}`).length == 0) jqElement.after(embedGif);
+  else {
+    $(`#giphy-embed-${gifClass}`).attr({
+      src: `../assets/feedbackGifs/${gifType}/${getFilenameFromLink(gifLink)}.gif`
+    });
+
+    $(`#giphy-embed-link-${gifClass}`).attr({
+      href: `${gifLink}`
+    });
+  }
 };
 
 const loadFeedbackGifs = () => {
@@ -167,22 +180,11 @@ const loadFeedbackGifs = () => {
     });
 };
 
-const loadLinksAndScripts = () => {
-  //TODO: ask boss to implement this so it doesn't need to be added dynamically
-  // let scripts = `<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"
-  // integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx"
-  // crossorigin="anonymous"></script>`;
-  // let bootstrapCss = `<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css"
-  // integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">`;
-  //TODO: update relative link to custom css
-  // let customCss = `<link href="styles.css" rel="stylesheet">`;
-  // $("head").append(bootstrapCss, customCss);
-  // $("body").append(scripts);
-};
-
-const populateQuiz = () => {
+const populateQuiz = async () => {
   //return so the promise can be chained
-  return fetch(`../assets/questions/${csvBaseName}${getModuleNumber(pagePath)}.csv`)
+  return fetch(
+    `../assets/questions/${csvBaseName}${getModuleNumber(pagePath)}.csv`
+  )
     .then((response) => response.text())
     .then((text) => {
       let csvData = $.csv.toObjects(text);
@@ -190,17 +192,18 @@ const populateQuiz = () => {
         .filter((qObj) => qObj.section == getSectionNumber(pagePath))
         .map((qObj) => {
           return {
-            question: qObj.question,
+            question: trimIfDefined(qObj.question),
             options: [
-              { answer: qObj.answer },
-              { d1: qObj.distractor1 },
-              { d2: qObj.distractor2 },
+              { answer: trimIfDefined(qObj.answer) },
+              { d1: trimIfDefined(qObj.distractor1) },
+              { d2: trimIfDefined(qObj.distractor2) },
             ].sort(() => Math.random() - 0.5),
           };
         });
       return csvData;
     })
     .then((questions) => {
+      hasQuestions = questions.length == 0 ? false : true;
       questions.forEach((question, qIndex) => {
         let currentQuestion = $("<div></div>")
           .attr({
@@ -208,13 +211,17 @@ const populateQuiz = () => {
             id: `q${qIndex}`,
           })
           .append(
-            $("<p></p>").text(`${question.question}`).attr({
-              class: "question-title",
-            })
+            $("<p></p>")
+              .text(`${question.question ? question.question : "No Question"}`)
+              .attr({
+                class: "question-title",
+              })
           );
 
         question.options.forEach((option, oIndex) => {
           let key = Object.keys(option)[0];
+          if (!option[key]) return;
+
           let opt = $("<div></div>")
             .attr({ class: "form-check" })
             .append(
@@ -259,7 +266,8 @@ const populateQuiz = () => {
             addFeedbackGifs();
           })
       );
-    });
+    })
+    .catch((e) => console.log(e));
 };
 
 const displayGrade = (grade) => {
@@ -311,4 +319,12 @@ const getOptionType = (option) => {
   let key = Object.keys(option)[0];
   if (key == "answer") return "ans";
   else return option[key].slice(0, 1) == "~" ? "alm" : "d";
+};
+
+const trimIfDefined = (target) => {
+  return target ? target.trim() : target;
+};
+
+const codeFromGifLink = (link) => {
+  return link.split("-").pop();
 };
