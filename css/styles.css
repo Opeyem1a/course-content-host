@@ -4,10 +4,11 @@ body {
   position: relative;
   margin: auto;
   padding: 0;
-  width: 60%;
+  width: 70%;
   font-family: "Inter", sans-serif;
   text-align: center;
-  color: #ffa3a3;
+  /* color: #ffa3a3; */
+  color: #7B241C;
 }
 
 .main-content {
@@ -21,12 +22,11 @@ body {
 .question-wrapper {
   background-color: #fafafa;
   border-radius: 5px;
-  padding: 5%;
+  padding: 2rem;
 }
 
 .question-title {
   text-decoration: italic;
-  font-size: 2rem;
 }
 
 #goto-next-section {

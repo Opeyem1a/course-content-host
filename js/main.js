@@ -32,7 +32,7 @@ const startTimingContinue = () => {
   $("#goto-next-section").on("click", function (event) {
     event.preventDefault();
     let data = {
-      section: $(".content-section:visible").eq(-2).find("h3").text(),
+      section: $(".content-section:visible").eq(-2).find("h2").text(),
       time: Date.now(),
     };
     sessionTimes.eachContinue.push(data);
@@ -203,6 +203,14 @@ const populateQuiz = async () => {
       return csvData;
     })
     .then((questions) => {
+      $("#review-form").append(
+        $("<hr>"),
+        $("<h2></h2>")
+          .text("Quick Review")
+          .attr({
+            id: "title-review-form"
+          })
+      );
       hasQuestions = questions.length == 0 ? false : true;
       questions.forEach((question, qIndex) => {
         let currentQuestion = $("<div></div>")
@@ -211,7 +219,7 @@ const populateQuiz = async () => {
             id: `q${qIndex}`,
           })
           .append(
-            $("<p></p>")
+            $("<h6></h6>")
               .text(`${question.question ? question.question : "No Question"}`)
               .attr({
                 class: "question-title",
