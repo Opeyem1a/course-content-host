@@ -6,7 +6,7 @@ body {
   padding: 0;
   width: 70%;
   font-family: "Inter", sans-serif;
-  text-align: center;
+  /* text-align: center; */
   /* color: #ffa3a3; */
   color: #7B241C;
 }
@@ -66,5 +66,6 @@ a {
 }
 
 .footer {
-  margin-top: 200px;
+  margin-top: 5rem;
+  text-align: center;
 }
