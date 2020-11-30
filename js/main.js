@@ -3,11 +3,10 @@ const pagePath = window.location.pathname;
 
 let feedbackGifs = {};
 let sessionTimes = {
+  startTime: 0,
   eachContinue: [],
-  eachSubmit: [],
-  eachScore: [], //array of objects, each object contains q:a pairs for all answered qs
-  startTime: 0, //time from load to end
-  endTime: 0,
+  eachQuizSubmit: [],
+  endTime: 0
 };
 let hasQuestions = true;
 
@@ -15,8 +14,8 @@ $(function () {
   setupPage().then((text) => {
     console.log(text);
     loadFeedbackGifs();
-    setupContinue().then(() => startTimingContinue());
-    populateQuiz().then(() => startTimingQuiz());
+    setupContinue();
+    populateQuiz();
   });
 });
 
@@ -27,29 +26,28 @@ const setupPage = () => {
   });
 };
 
-const startTimingContinue = () => {
-  $("#goto-next-section").on("click", function (event) {
-    event.preventDefault();
-    let data = {
-      section: $(".content-section:visible").eq(-2).find("h2").text(),
-      time: Date.now(),
-    };
+const logTimingContinue = () => {
+    let data = {time: Date.now()};
+    if ($("#review-form:visible").length != 0) {
+      //review form is already visible i.e. user is continuing beyond the form
+        data["section"] = `Review Form`;
+    } else {
+        data["section"] = $(".content-section:visible:last").find("h2").text();
+    }
+    console.log(data);
     sessionTimes.eachContinue.push(data);
-  });
+
 };
 
-const startTimingQuiz = () => {
-  $("#submit-review-form").on("click", function (event) {
-    event.preventDefault();
-    let results = {};
+const logTimingQuiz = () => {
+    let results = {time: Date.now()};
     $("input[type=radio]:checked").each(function () {
       results[$(this).parent().parent().attr("id")] = $(this)
         .attr("id")
         .split("-")[0];
     });
-    sessionTimes.eachScore.push(results);
-    sessionTimes.eachSubmit.push(Date.now());
-  });
+    console.log(results);
+    sessionTimes.eachQuizSubmit.push(results);
 };
 
 const downloadTiming = (event) => {
@@ -96,10 +94,12 @@ const addContinue = () => {
       })
       .on("click", function (event) {
         event.preventDefault();
+        logTimingContinue();
         if ($(".content-section:hidden:first").length == 0) {
-          if ($("#review-form:hidden").length != 0 && hasQuestions)
+          if ($("#review-form:hidden").length != 0 && hasQuestions) {
             $("#review-form").show();
-          else {
+            $("#goto-next-section").hide();
+          } else {
             $("#goto-next-section").after(
               //TODO: what should the download button say?
               $("<a></a>")
@@ -141,7 +141,6 @@ const addFeedbackGifs = () => {
 };
 
 const attachOrEditGif = (jqElement, gifType, offset) => {
-  console.log(offset);
   let gifClass = jqElement.attr("id");
   let embedGif = `<img id="giphy-embed-${gifClass}" class="giphy-embed giphy-embed-${gifType}"
                         src="../assets/feedbackGifs/${gifType}/${offset}.gif">
@@ -277,13 +276,19 @@ const displayGrade = (grade) => {
     $("#review-form")
       .find("hr").eq(1)
       .before(
-        //TODO: update class styling
         $("<p></p>").attr({
           id: "form-grade",
           class: "",
         })
       );
   }
+
+  if(grade[0] == grade[1]) {
+    $("#goto-next-section").show();
+  };
+
+  logTimingQuiz(grade);
+
   $("#form-grade").text(`Score: ${grade[0]}/${grade[1]}`);
 };
 
@@ -297,7 +302,6 @@ const calculateGrade = (event) => {
     total++;
   });
 
-  console.log([score, total]);
   return [score, total];
 };
 
