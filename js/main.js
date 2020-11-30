@@ -2,7 +2,6 @@ const csvBaseName = "module";
 const pagePath = window.location.pathname;
 
 let feedbackGifs = {};
-let feedbackGifsSize = {};
 let sessionTimes = {
   eachContinue: [],
   eachSubmit: [],
@@ -74,12 +73,12 @@ const downloadTiming = (event) => {
 
 const setupContinue = () => {
   return new Promise((resolve, reject) => {
-    $(".content-section").each(function(index) {
+    $(".content-section").each(function (index) {
       //skip hiding first section
       if (index == 0) return true;
       $(this).hide();
     });
-    $("#review-form").each(function() {
+    $("#review-form").each(function () {
       $(this).hide();
     });
     addContinue();
@@ -134,36 +133,33 @@ const addFeedbackGifs = () => {
       : $(this).attr("id").startsWith("alm")
       ? "almost"
       : "wrong";
-    let offset = i % feedbackGifsSize[gifType];
+    let offset = i % feedbackGifs[gifType];
     i++;
     //attach gif after the question-wrapper div element
     attachOrEditGif($(this).parent().parent(), gifType, offset);
   });
 };
 
-const getFilenameFromLink = (gifLink) => {
-  return gifLink.split("/").pop();
-};
-
 const attachOrEditGif = (jqElement, gifType, offset) => {
-  let gifLink = feedbackGifs[gifType][offset];
+  console.log(offset);
   let gifClass = jqElement.attr("id");
+  let embedGif = `<img id="giphy-embed-${gifClass}" class="giphy-embed giphy-embed-${gifType}"
+                        src="../assets/feedbackGifs/${gifType}/${offset}.gif">
+                  </img>`;
 
-  let embedGif = `<img id="giphy-embed-${gifClass}"
-                        src="../assets/feedbackGifs/${gifType}/${getFilenameFromLink(gifLink)}.gif">
-                  </img>
-                  <p>
-                    <a id="giphy-embed-link-${gifClass}" href="${gifLink}">via GIPHY</a>
-                  </p>`;
+  let source = `<p>
+                  <a id="giphy-source" href="https://giphy.com/">Gifs via GIPHY</a>
+                </p>`;
 
-  if ($(`#giphy-embed-${gifClass}`).length == 0) jqElement.after(embedGif);
-  else {
+  if ($(`#giphy-embed-${gifClass}`).length == 0) {
+    jqElement.after(embedGif);
+    if ($(`#giphy-source`).length == 0) {
+      $(".footer").append(source);
+    }
+  } else {
     $(`#giphy-embed-${gifClass}`).attr({
-      src: `../assets/feedbackGifs/${gifType}/${getFilenameFromLink(gifLink)}.gif`
-    });
-
-    $(`#giphy-embed-link-${gifClass}`).attr({
-      href: `${gifLink}`
+      src: `../assets/feedbackGifs/${gifType}/${offset}.gif`,
+      class: `giphy-embed giphy-embed-${gifType}`
     });
   }
 };
@@ -174,9 +170,7 @@ const loadFeedbackGifs = () => {
     .then((response) => response.json())
     .then((json) => {
       feedbackGifs = json;
-      Object.keys(json).forEach((key) => {
-        feedbackGifsSize[key] = feedbackGifs[key].length;
-      });
+      // TODO: ideally, the lengths of the directories would be calculated and stored here
     });
 };
 
@@ -205,11 +199,9 @@ const populateQuiz = async () => {
     .then((questions) => {
       $("#review-form").append(
         $("<hr>"),
-        $("<h2></h2>")
-          .text("Quick Review")
-          .attr({
-            id: "title-review-form"
-          })
+        $("<h2></h2>").text("Quick Review").attr({
+          id: "title-review-form",
+        })
       );
       hasQuestions = questions.length == 0 ? false : true;
       questions.forEach((question, qIndex) => {
@@ -261,32 +253,36 @@ const populateQuiz = async () => {
       });
     })
     .then(() => {
-      $("#review-form").append(
-        $("<button></button>")
-          .text("Submit")
-          .attr({
-            id: "submit-review-form",
-            class: "btn btn-primary",
-            type: "submit",
-          })
-          .on("click", (event) => {
-            displayGrade(calculateGrade(event));
-            addFeedbackGifs();
-          })
-      );
+      $("#review-form")
+        .append(
+          $("<button></button>")
+            .text("Submit")
+            .attr({
+              id: "submit-review-form",
+              class: "btn btn-primary",
+              type: "submit",
+            })
+            .on("click", (event) => {
+              displayGrade(calculateGrade(event));
+              addFeedbackGifs();
+            })
+        )
+        .append($("<hr>"));
     })
     .catch((e) => console.log(e));
 };
 
 const displayGrade = (grade) => {
   if ($("#form-grade").length == 0) {
-    $("#review-form").append(
-      //TODO: update class styling
-      $("<p></p>").attr({
-        id: "form-grade",
-        class: "",
-      })
-    );
+    $("#review-form")
+      .find("hr").eq(1)
+      .before(
+        //TODO: update class styling
+        $("<p></p>").attr({
+          id: "form-grade",
+          class: "",
+        })
+      );
   }
   $("#form-grade").text(`Score: ${grade[0]}/${grade[1]}`);
 };
