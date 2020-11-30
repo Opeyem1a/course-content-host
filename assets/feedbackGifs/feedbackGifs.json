@@ -1,9 +1,5 @@
 {
-  "correct": [
-    "https://giphy.com/gifs/spongebob-cartoon-nickelodeon-thumbs-3o7abKhOpu0NwenH3O"
-  ],
-  "almost": ["https://giphy.com/gifs/cbc-funny-comedy-l4FGq1RrgxMPSqCE8"],
-  "wrong": [
-    "https://giphy.com/gifs/latenightseth-no-seth-meyers-xUOrwbJA5z6KiMu0Qo"
-  ]
+  "correct": 1,
+  "almost": 1,
+  "wrong": 1
 }
