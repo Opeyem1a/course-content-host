@@ -109,6 +109,7 @@ blockquote:hover {
   border-left: 0.6rem solid;
   border-radius: 0.2rem;
   margin: 1rem 0 2rem 0;
+  height: 200px;
   /* width: 100%; */
 }
 
@@ -124,14 +125,14 @@ blockquote:hover {
   border-color: var(--failure);
 }
 
-#goto-next-section {
+.btn-expand-hover {
   margin-top: 2rem;
   cursor: pointer;
   text-decoration: underline;
   transition: all .3s cubic-bezier(0.445, 0.05, 0.55, 0.95);
 }
 
-#goto-next-section:hover {
+.btn-expand-hover:hover {
   text-decoration: none;
   color: var(--bg-color);
   background-color: var(--accent-color);
@@ -139,11 +140,6 @@ blockquote:hover {
   border-color: var(--title-color);
   border-width: 0.56rem;
   border-radius: 0.2rem;
-}
-
-#download-timing-btn {
-  cursor: pointer;
-  text-decoration: underline;
 }
 
 #submit-review-form {

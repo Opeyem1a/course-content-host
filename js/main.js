@@ -34,20 +34,18 @@ const logTimingContinue = () => {
     } else {
         data["section"] = $(".content-section:visible:last").find("h2").text();
     }
-    console.log(data);
     sessionTimes.eachContinue.push(data);
 
 };
 
 const logTimingQuiz = () => {
-    let results = {time: Date.now()};
+    let data = {time: Date.now()};
     $("input[type=radio]:checked").each(function () {
-      results[$(this).parent().parent().attr("id")] = $(this)
+      data[$(this).parent().parent().attr("id")] = $(this)
         .attr("id")
         .split("-")[0];
     });
-    console.log(results);
-    sessionTimes.eachQuizSubmit.push(results);
+    sessionTimes.eachQuizSubmit.push(data);
 };
 
 const downloadTiming = (event) => {
@@ -63,7 +61,7 @@ const downloadTiming = (event) => {
       href: url,
       download: `COSC341-${getModuleNumber(pagePath)}-${getSectionNumber(
         pagePath
-      )}-Timings.txt`,
+      )}-Reading-Logs.txt`,
     });
     resolve(url);
   });
@@ -91,6 +89,7 @@ const addContinue = () => {
       .text("Continue")
       .attr({
         id: "goto-next-section",
+        class: "btn-expand-hover"
       })
       .on("click", function (event) {
         event.preventDefault();
@@ -103,9 +102,10 @@ const addContinue = () => {
             $("#goto-next-section").after(
               //TODO: what should the download button say?
               $("<a></a>")
-                .text("Download Here")
+                .text("Download Reading Logs")
                 .attr({
                   id: "download-timing-btn",
+                  class: "btn-expand-hover"
                 })
                 .on("click", function (event) {
                   downloadTiming(event).then((url) => {
