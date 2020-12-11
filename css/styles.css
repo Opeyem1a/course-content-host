@@ -1,14 +1,17 @@
 @import url("https://rsms.me/inter/inter.css");
+@import "extra-bootstrap.css";
 
 :root {
-  --bg-color: #fafafa;
-  --question-bg-color: #ffffff;
+  --bg-color: #ffffff;
+  --secondary-color: #fafafa;
   --title-color: #1b1b1b;
   --text-color: #303030;
-  /* --accent-color: #ffa3a3; */
   --accent-color: #d67070;
-  --blue-hl: #6ab8ff;
-  --red-hl: #ff5252;
+  /* --hl-blue: #90bdea;
+  --hl-red: #d67070; */
+  --hl-blue: #5798d8;
+  --hl-red: #df5b5b;
+
   --success: #7aebb6;
   --almost: #ffa652;
   --failure: #ff5252;
@@ -18,8 +21,9 @@
 body {
   position: relative;
   margin: auto;
+  font-size: 16px;
   padding: 0;
-  width: 70%;
+  /* width: 70%; */
   font-family: "Inter", Helvetica, Arial, sans-serif;
   background-color: var(--bg-color) !important;
   color: var(--text-color);
@@ -35,8 +39,18 @@ h6 {
 }
 
 h1 {
-  /* for main page titles */
+  display: block;
+  margin: 0 0 24px 0;
+}
+
+a {
+  color: var(--accent-color);
   text-decoration: underline;
+  transition: all .3s cubic-bezier(0.445, 0.05, 0.55, 0.95);
+}
+
+a:hover {
+  color: var(--hl-blue);
 }
 
 blockquote {
@@ -68,14 +82,28 @@ blockquote:hover {
   box-shadow: 0.05rem 0.5rem 1rem var(--shadow-color);
 }
 
+.content-section {
+  margin: 3rem 0;
+}
+
+.form-check-label {
+  margin: auto auto 0.5rem 1.2rem;
+  font-weight: normal;
+  cursor: pointer;
+}
+
+.form-check-input {
+  margin: 0.2rem 0;
+} 
+
 .hl-red {
-  color: var(--red-hl);
+  color: var(--hl-red);
   padding: 0 0.1rem;
   transition: all .3s cubic-bezier(0.445, 0.05, 0.55, 0.95);
 }
 
 .hl-blue {
-  color: var(--blue-hl);
+  color: var(--hl-blue);
   padding: 0 0.1rem;
   transition: all .3s cubic-bezier(0.445, 0.05, 0.55, 0.95);
 }
@@ -89,8 +117,9 @@ blockquote:hover {
 }
 
 .question-wrapper {
-  background-color: var(--question-bg-color);
-  border-radius: 0.2rem;
+  background-color: transparent;
+  border-radius: 0.5rem;
+  border-color: var(--secondary-color);
   padding: 2rem;
   margin-bottom: 0.8rem;
   box-shadow: 0.05rem 0.1rem 0.5rem var(--shadow-color);
@@ -162,30 +191,9 @@ blockquote:hover {
   margin-top: 1rem;
 }
 
-h1 {
-  display: block;
-  font-size: 3em;
-  margin: 0 0 24px 0;
-}
-
-h2 {
-  font-weight: 500;
-  font-size: 24px;
-}
-
-h3 {
-  font-weight: 300;
-  font-size: 24px;
-}
-
-a {
-  color: inherit;
-  text-decoration: underline;
-}
-
 .header {
-  margin-top: 100px;
-  margin-bottom: 100px;
+  margin-top: 6rem;
+  margin-bottom: 2rem;
 }
 
 .footer {

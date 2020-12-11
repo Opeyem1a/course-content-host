@@ -1,0 +1,72 @@
+/* Additional CSS (by Cam)*/
+  
+body {
+    padding-bottom: 4em;
+}
+
+.rubric table,
+.rubric th,
+.rubric td {
+border: solid #ddd 1px;
+border-radius: 4px;
+}
+
+.rubric tr:nth-child(even) {
+background: #f5f5f5;
+}
+
+table.no-title tr:first-child {
+background: #f5f5f5;
+}
+
+.rubric p {
+margin: 0;
+line-height: 1.5em;
+}
+
+.panel {
+margin-bottom: 0;
+}
+
+.panel-body.panel-assets {
+line-height: 1.5em;
+}
+
+.stick {
+position: fixed;
+top: 0;
+width: 100%;
+}
+
+.jumbotron {
+    margin-top: 4rem;
+}
+/* End of Cam's CSS */
+
+pre {
+    background-color: #fafafa;
+}
+
+.panel {
+    margin: 3rem 0;
+}
+
+.panel-title {
+    font-weight: 550;
+    padding: 0.2rem 0.5rem;
+    font-size: 1.65rem;
+}
+
+.panel-body {
+    padding: 2.5rem 3.5rem;
+}
+
+.jumbotron h1 {
+    font-size: 3rem !important;
+    font-weight: bolder;
+}
+
+.jumbotron h2 {
+    font-size: 2rem !important;
+    font-weight: bold;
+}

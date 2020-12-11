@@ -35,7 +35,6 @@ const logTimingContinue = () => {
         data["section"] = $(".content-section:visible:last").find("h2").text();
     }
     sessionTimes.eachContinue.push(data);
-
 };
 
 const logTimingQuiz = () => {
@@ -210,7 +209,7 @@ const populateQuiz = async () => {
             id: `q${qIndex}`,
           })
           .append(
-            $("<h6></h6>")
+            $("<p></p>")
               .text(`${question.question ? question.question : "No Question"}`)
               .attr({
                 class: "question-title",
