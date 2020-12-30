@@ -1,0 +1,22 @@
+{
+    "correct": [
+      "https://media.giphy.com/media/3ohjUNaCmeMWbjO5he/giphy.gif",
+      "https://media.giphy.com/media/3ohjUNaCmeMWbjO5he/giphy.gif",
+      "https://media.giphy.com/media/3ohjUNaCmeMWbjO5he/giphy.gif"
+    ],
+    "almost": [
+      "https://media.giphy.com/media/l4FGq1RrgxMPSqCE8/giphy.gif",
+      "https://media.giphy.com/media/l4FGq1RrgxMPSqCE8/giphy.gif",
+      "https://media.giphy.com/media/xT9DPBBQ4CM3bVTkek/giphy.gif"
+    ],
+    "wrong": [
+      "https://media.giphy.com/media/NRXleEopnqL3a/giphy.gif",
+      "https://media.giphy.com/media/NRXleEopnqL3a/giphy.gif",
+      "https://media.giphy.com/media/NRXleEopnqL3a/giphy.gif",
+      "https://media.giphy.com/media/NRXleEopnqL3a/giphy.gif",
+      "https://media.giphy.com/media/NRXleEopnqL3a/giphy.gif",
+      "https://media.giphy.com/media/NRXleEopnqL3a/giphy.gif",
+      "https://media.giphy.com/media/NJbKGIBOkvCla/giphy.gif"
+    ]
+  }
+  
