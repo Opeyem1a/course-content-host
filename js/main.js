@@ -125,15 +125,14 @@ const addContinue = () => {
 };
 
 const addFeedbackGifs = () => {
-  let i = 0;
   $("input:checked").each(function () {
     let gifType = $(this).attr("id").startsWith("ans")
       ? "correct"
       : $(this).attr("id").startsWith("alm")
       ? "almost"
       : "wrong";
-    let offset = i % feedbackGifs[gifType];
-    i++;
+
+    let offset = Math.floor(Math.random() * feedbackGifs[gifType]);
     //attach gif after the question-wrapper div element
     attachOrEditGif($(this).parent().parent(), gifType, offset);
   });

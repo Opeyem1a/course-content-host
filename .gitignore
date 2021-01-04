@@ -2,3 +2,4 @@ node_modules/
 # assets/feedbackGifs/correct
 # assets/feedbackGifs/wrong
 # assets/feedbackGifs/almost
+scripts/feedbackGifs*
