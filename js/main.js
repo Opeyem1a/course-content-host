@@ -11,7 +11,8 @@ let sessionTimes = {
 let hasQuestions = true;
 
 $(function () {
-  setupPage().then((text) => {
+  setupPage()
+      .then((text) => {
     console.log(text);
     loadFeedbackGifs();
     setupContinue();
